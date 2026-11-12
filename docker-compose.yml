@@ -1,0 +1,59 @@
+# docker compose up --build    then open http://localhost:8000
+# Create an admin: docker compose exec api python -m judgebox.cli create-admin <name>
+
+x-app: &app
+  build: .
+  env_file: .env
+  environment:
+    DATABASE_URL: postgresql+psycopg://judgebox:${POSTGRES_PASSWORD}@db/judgebox
+    REDIS_URL: redis://redis:6379/0
+    PROBLEMS_DIR: /app/problems
+  volumes:
+    - ./problems:/app/problems:ro
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_started
+  restart: unless-stopped
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: judgebox
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: judgebox
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "judgebox"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    restart: unless-stopped
+
+  api:
+    <<: *app
+    ports:
+      - "8000:8000"
+
+  worker:
+    <<: *app
+    command: ["python", "-m", "judgebox.worker.main"]
+    # Namespaces, mounts and cgroups need it. The API container does not get
+    # this; only workers run untrusted code, and only inside the sandbox.
+    privileged: true
+    deploy:
+      replicas: 2
+    stop_grace_period: 60s
+
+volumes:
+  pgdata:
+  redisdata:

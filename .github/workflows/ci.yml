@@ -1,0 +1,48 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff
+      - run: ruff check judgebox tests scripts
+
+  test:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: judgebox_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+    env:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost/judgebox_test
+      REDIS_URL: redis://localhost:6379/15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchains
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends g++ openjdk-21-jdk-headless python3-venv
+          sudo scripts/build_pch.sh
+      - name: Install
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install -e ".[dev]"
+      # The sandbox needs root for namespaces, mounts and cgroups.
+      - name: Test
+        run: sudo -E .venv/bin/python -m pytest -q
