@@ -1,0 +1,5 @@
+title = "Circle area"
+time_limit_ms = 1000
+memory_mb = 64
+checker = "float"
+float_tolerance = 1e-6

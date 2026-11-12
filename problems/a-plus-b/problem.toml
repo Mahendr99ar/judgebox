@@ -1,0 +1,4 @@
+title = "A + B"
+time_limit_ms = 1000
+memory_mb = 64
+checker = "tokens"
