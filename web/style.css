@@ -1,0 +1,111 @@
+:root {
+  --paper: #eef1f6;
+  --sheet: #ffffff;
+  --ink: #1b2333;
+  --ink-2: #4a5468;
+  --ink-3: #7a8396;
+  --line: #d5dbe6;
+  --action: #3443a8;
+  --action-ink: #ffffff;
+  --ac: #1e8a4c;
+  --wa: #c2362f;
+  --tle: #b7791f;
+  --other: #7b3fa0;
+  --pending: #a8b0bf;
+  --sans: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 var(--sans); }
+a { color: var(--action); }
+:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+
+.bar { display: flex; align-items: center; gap: 28px; padding: 14px 28px; background: var(--sheet); border-bottom: 1px solid var(--line); }
+.brand { font-weight: 600; font-size: 18px; color: var(--ink); text-decoration: none; letter-spacing: -0.01em; }
+.bar nav { display: flex; gap: 20px; flex: 1; }
+.bar nav a { color: var(--ink-2); text-decoration: none; padding: 4px 0; border-bottom: 2px solid transparent; }
+.bar nav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--action); }
+#who { color: var(--ink-2); font-size: 14px; display: flex; gap: 12px; align-items: center; }
+
+main { max-width: 1240px; margin: 0 auto; padding: 32px 28px 80px; }
+main:focus, main:focus-visible { outline: none; }
+h1 { font-size: 30px; line-height: 1.2; margin: 0 0 6px; letter-spacing: -0.015em; font-weight: 600; }
+h2 { font-size: 20px; margin: 28px 0 10px; font-weight: 600; }
+.lede { color: var(--ink-2); margin: 0 0 24px; }
+.limits { color: var(--ink-2); font-size: 14px; margin: 0 0 20px; }
+
+table { width: 100%; border-collapse: collapse; background: var(--sheet); border: 1px solid var(--line); }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+th { font-weight: 500; color: var(--ink-2); font-size: 14px; }
+td.num, th.num { text-align: right; }
+td.num { font-family: var(--mono); font-size: 14px; }
+tr:last-child td { border-bottom: 0; }
+tbody tr:hover { background: #f6f8fb; }
+
+button, select, input, textarea { font: inherit; color: inherit; }
+button { background: var(--action); color: var(--action-ink); border: 0; border-radius: 6px; padding: 9px 18px; font-weight: 500; cursor: pointer; }
+button.quiet { background: transparent; color: var(--action); padding: 4px 6px; }
+button:disabled { opacity: 0.55; cursor: progress; }
+select, input { background: var(--sheet); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; }
+
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 36px; align-items: start; }
+.statement { max-width: 68ch; }
+.statement p { margin: 0 0 14px; }
+.statement code, .msg code { font-family: var(--mono); font-size: 0.92em; background: #e3e8f1; padding: 1px 5px; border-radius: 4px; }
+.statement pre { font-family: var(--mono); background: var(--sheet); border: 1px solid var(--line); padding: 12px; border-radius: 6px; overflow-x: auto; }
+
+.editor { position: sticky; top: 20px; background: var(--sheet); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+.editor .row { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+.editor .row .spacer { flex: 1; }
+textarea.code { width: 100%; min-height: 340px; resize: vertical; white-space: pre; overflow-x: auto; font: 14px/1.5 var(--mono); tab-size: 4; border: 1px solid var(--line); border-radius: 6px; padding: 12px; background: #fbfcfe; }
+
+/* The verdict tape: one cell per test, filled in as results arrive. */
+.tape { margin-top: 16px; }
+.tape .cells { display: flex; flex-wrap: wrap; gap: 4px; margin: 8px 0; }
+.tape .cell { width: 30px; height: 30px; border-radius: 4px; background: #e6eaf1; display: grid; place-items: center; font: 500 11px var(--mono); color: var(--ink-3); transition: background-color 160ms ease-out; }
+.tape .cell.AC { background: var(--ac); color: #fff; }
+.tape .cell.WA { background: var(--wa); color: #fff; }
+.tape .cell.TLE, .tape .cell.MLE, .tape .cell.OLE { background: var(--tle); color: #fff; }
+.tape .cell.RE, .tape .cell.SE { background: var(--other); color: #fff; }
+.tape .cell.running { background: var(--pending); color: #fff; animation: breathe 1s ease-in-out infinite; }
+.tape .headline { font-size: 22px; font-weight: 600; }
+.tape .detail { color: var(--ink-2); font-size: 14px; }
+@keyframes breathe { 50% { opacity: 0.55; } }
+
+.verdict { font-weight: 600; }
+.verdict.AC { color: var(--ac); }
+.verdict.WA { color: var(--wa); }
+.verdict.TLE, .verdict.MLE, .verdict.OLE { color: var(--tle); }
+.verdict.RE, .verdict.CE, .verdict.SE { color: var(--other); }
+.verdict.pending { color: var(--ink-3); font-weight: 400; }
+
+.msg { background: var(--sheet); border: 1px solid var(--line); border-left: 3px solid var(--wa); padding: 10px 14px; border-radius: 4px; margin: 12px 0; white-space: pre-wrap; font: 13px/1.5 var(--mono); max-height: 260px; overflow: auto; }
+.notice { color: var(--ink-2); background: var(--sheet); border: 1px solid var(--line); padding: 14px 16px; border-radius: 6px; }
+
+.auth { max-width: 380px; background: var(--sheet); border: 1px solid var(--line); border-radius: 8px; padding: 24px; }
+.auth label { display: block; font-size: 14px; color: var(--ink-2); margin: 14px 0 4px; }
+.auth input { width: 100%; }
+.auth .actions { display: flex; gap: 12px; margin-top: 20px; align-items: center; }
+.error { color: var(--wa); font-size: 14px; min-height: 1.4em; margin-top: 10px; }
+
+/* Scoreboard */
+table.board { width: auto; min-width: min(100%, 640px); }
+.board td:nth-child(2) { min-width: 180px; }
+.board small { display: block; color: var(--ink-2); font-size: 11px; }
+.board td.cell { text-align: center; font-family: var(--mono); font-size: 13px; width: 76px; }
+.board td.solved { background: #e3f3ea; color: var(--ac); }
+.board td.tried { background: #fbe9e8; color: var(--wa); }
+.board td.pend { background: #eef0f4; color: var(--ink-2); }
+.board .frozen { color: var(--tle); font-size: 14px; }
+
+@media (max-width: 860px) {
+  .split { grid-template-columns: 1fr; }
+  .editor { position: static; }
+  .bar { flex-wrap: wrap; gap: 12px 20px; padding: 12px 16px; }
+  main { padding: 24px 16px 64px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tape .cell { transition: none; }
+  .tape .cell.running { animation: none; }
+}
